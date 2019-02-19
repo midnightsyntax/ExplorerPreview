@@ -7,4 +7,4 @@ A small utility program for managing percieved types and changing how Explorer p
 -   Register new file types
 
 ## Screenshot:
-![preview](/preview.png)
+![Preview](https://raw.githubusercontent.com/midnightsyntax/ExplorerPreview/master/preview.PNG)
