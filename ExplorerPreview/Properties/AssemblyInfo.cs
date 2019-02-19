@@ -11,8 +11,8 @@ using System.Windows;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ExplorerPreview")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("Explorer Preview Modifier")]
+[assembly: AssemblyCopyright("Copyright © midnightsyntax 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

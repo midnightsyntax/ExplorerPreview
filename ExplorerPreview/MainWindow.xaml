@@ -11,7 +11,7 @@
         ResizeMode="NoResize"
         Margin="0"
         Style="{StaticResource CustomWindow2}"
-        Title="Explorer Preview As"
+        Title="Explorer Preview Modifier"
         Height="500" MinWidth="{Binding ElementName=mainGrid, Path=Width}" Padding="0" Width="506"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel,IsDesignTimeCreatable=True}" >
 
