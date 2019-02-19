@@ -11,7 +11,7 @@
         ResizeMode="NoResize"
         Margin="0"
         Style="{StaticResource CustomWindow2}"
-        Title="Explorer Preview Type Manager"
+        Title="Explorer Preview As"
         Height="500" MinWidth="{Binding ElementName=mainGrid, Path=Width}" Padding="0" Width="506"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel,IsDesignTimeCreatable=True}" >
 
