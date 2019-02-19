@@ -197,7 +197,7 @@
                                 </Button>
                                 <Grid Margin="0">
                                     <StackPanel>
-                                        <TextBlock x:Name="infoFileType" Style="{StaticResource textblock1}">File class</TextBlock>
+                                        <TextBlock x:Name="infoFileType" Style="{StaticResource textblock1}" ToolTip="File type class name">File class</TextBlock>
                                         <TextBlock x:Name="infoFileTypeValue" Foreground="#FFAAAAAA" Style="{StaticResource textblock1}" TextWrapping="Wrap" Text="{Binding LastSelectedListItem.File}"></TextBlock>
                                         <Border Height="2" Margin="0,4,0,2">
                                             <Border.Background>
@@ -207,7 +207,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock x:Name="infoPerceivedType" Style="{StaticResource textblock1}">Perceived Type</TextBlock>
+                                        <TextBlock x:Name="infoPerceivedType" Style="{StaticResource textblock1}" ToolTip="The perceived type determines how Explorer previews files of this type">Perceived Type</TextBlock>
                                         <TextBlock x:Name="infoPerceivedTypeValue" Foreground="#FFAAAAAA" Style="{StaticResource textblock1}" Text="{Binding LastSelectedListItem.PercievedType, ConverterParameter=none, Converter={StaticResource EmptyToStringConverter}}"></TextBlock>
                                     </StackPanel>
                                 </Grid>

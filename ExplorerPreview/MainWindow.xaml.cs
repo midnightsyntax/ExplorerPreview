@@ -202,7 +202,12 @@ namespace ExplorerPreview
                     LastPercievedType = newPType;
                     btnApply.IsEnabled = false;
                     data.LastSelectedListItem.PercievedType = newPType;
-                    MessageBox.Show(string.Format("{0} perceived type is now {1}", _key, newPType), "Perceived Type Change", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                    if (newPType == "none")
+                    {
+                        MessageBox.Show(string.Format("{0} percieved type removed. Explorer preview pane will not preview files of this type.", _key, newPType), "Perceived Type Change", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                    } else {
+                        MessageBox.Show(string.Format("{0} will now be previewed as {1} in the Explorer preview pane", _key, newPType), "Perceived Type Change", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                    }
                 }
             }
         }
