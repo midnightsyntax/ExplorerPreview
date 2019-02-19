@@ -1,0 +1,221 @@
+﻿<Window x:Class="ExplorerPreview.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExplorerPreview"
+        xmlns:converter="clr-namespace:ExplorerPreview.Converters"
+        xmlns:vm="clr-namespace:ExplorerPreview.ViewModels"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Margin="0"
+        Style="{StaticResource CustomWindow2}"
+        Title="Explorer Preview Type Manager"
+        Height="500" MinWidth="{Binding ElementName=mainGrid, Path=Width}" Padding="0" Width="506"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel,IsDesignTimeCreatable=True}" >
+
+    <Window.Resources>
+        <converter:ApplyButtonConverter x:Key="ApplyButtonConverter" />
+        <converter:EmptyToStringConverter x:Key="EmptyToStringConverter" />
+        <converter:WidthSubtractMarginConverter x:Key="WidthSubtractMarginConverter"/>
+        <Style x:Key="textblock1" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="FontSize" Value="11"></Setter>
+            <Setter Property="Margin" Value="2, 2, 2, 2"></Setter>
+        </Style>
+        <Style x:Key="radiobutton1" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="White"></Setter>
+        </Style>
+        <Storyboard x:Key="Storyboard1">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="btnApply">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="btnApply">
+                <EasingColorKeyFrame KeyTime="0" Value="#FFDDDDDD"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FF3ADA2A"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.2" Value="White"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.3" Value="#FFDDDDDD"/>
+            </ColorAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="btnApply">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="btnApply">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <ControlTemplate x:Key="ListBoxItemControlTemplate1" TargetType="{x:Type ListBoxItem}">
+            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Content="{TemplateBinding Content}"
+                                  ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="ValueStates">
+
+                        <!--Make the Value property red when it is negative.-->
+                        <VisualState Name="Negative">
+                            <Storyboard>
+                                <ColorAnimation To="Red"
+              Storyboard.TargetName="TextBlock" 
+              Storyboard.TargetProperty="(Foreground).(Color)"/>
+                            </Storyboard>
+
+                        </VisualState>
+
+                        <!--Return the TextBlock's Foreground to its 
+            original color.-->
+                        <VisualState Name="Positive"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Border>
+            <ControlTemplate.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" TargetName="Bd" Value="#1F26A0DA"/>
+                    <Setter Property="BorderBrush" TargetName="Bd" Value="#A826A0DA"/>
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" TargetName="Bd" Value="#3DDADADA"/>
+                    <Setter Property="BorderBrush" TargetName="Bd" Value="#FFDADADA"/>
+                </MultiTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                        <Condition Property="IsSelected" Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" TargetName="Bd" Value="#3D26A0DA"/>
+                    <Setter Property="BorderBrush" TargetName="Bd" Value="#FF26A0DA"/>
+                </MultiTrigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+
+    <Grid x:Name="mainGrid" Width="500" Margin="0" d:DataContext="{Binding Data}">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Red" Offset="0"/>
+                <GradientStop Color="Black" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid x:Name="wrapperGrid" Margin="10" Background="White" Opacity="0.1">
+
+        </Grid>
+        <Grid x:Name="overlayGrid" Margin="10" Background="Black" Opacity="0.6">
+
+        </Grid>
+        <Grid x:Name="contentGrid" Margin="10" Opacity="1" PreviewMouseLeftButtonUp="contentGrid_PreviewMouseLeftButtonUp" PreviewMouseRightButtonUp="contentGrid_PreviewMouseRightButtonUp">
+            <StackPanel x:Name="leftStackpanel">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="300" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70" />
+                        <RowDefinition Height="380" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Grid Margin="10">
+                            <StackPanel>
+                                <TextBlock FontSize="11" Style="{StaticResource textblock1}">Search</TextBlock>
+                                <TextBox x:Name="txtBox" FontSize="12" Padding="5" VerticalAlignment="Top" Text="" TextChanged="txtBox_TextChanged"></TextBox>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Column="0" Grid.Row="1">
+                        <Grid Margin="10, 0, 10, 10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Grid.RowSpan="2">
+                                    <TextBlock Grid.Row="0" Style="{StaticResource textblock1}">File types</TextBlock>
+                                    <ListBox Grid.Row="1" x:Name="listTypes" ItemsSource="{Binding Files}" HorizontalAlignment="Left" Height="255" Width="160" Margin="0,0,0,10" SelectionChanged="listTypes_SelectionChanged" VerticalContentAlignment="Center">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem">
+                                                <Setter Property="Padding" Value="0"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label x:Name="ListBoxItemLabel" Content="{Binding File}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" />
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Grid x:Name="gridBottomLeft" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBox x:Name="tbNewType" Width="160" Height="35" FontSize="12" Visibility="Visible" TextChanged="tbNewType_TextChanged" HorizontalContentAlignment="Center" PreviewKeyUp="tbNewType_PreviewKeyUp" Padding="0" PreviewMouseLeftButtonUp="tbNewType_PreviewMouseLeftButtonUp" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0"></TextBox>
+                                            <Button x:Name="btnSaveNewType" Visibility="Visible" Width="160" Height="35" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5" Background="#FFC3FF86" RenderTransformOrigin="0.5,0.5"  PreviewMouseLeftButtonUp="btnSaveNewType_PreviewMouseLeftButtonUp" >Save</Button>
+                                            <Button x:Name="btnNewType" Visibility="Visible" Width="160" Height="35" FontSize="12" PreviewMouseLeftButtonUp="btnNewType_PreviewMouseLeftButtonUp" Opacity="0.5" MouseEnter="btnNewType_MouseEnter" MouseLeave="btnNewType_MouseLeave" Padding="15, 7" Margin="0" HorizontalAlignment="Center" VerticalContentAlignment="Top">Register new type</Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                        <Grid Margin="0,25,10,0">
+                            <StackPanel Margin="10, 0, 0, 0" x:Name="stackpanelRight">
+                                <ItemsControl x:Name="btnsItemsControl">
+                                    <RadioButton GroupName="radio" Visibility="Collapsed" Margin="0, 2" x:Name="radioCustom" Click="radio_Click" Style="{StaticResource radiobutton1}">
+                                        <TextBox x:Name="tbCustom" Width="120" PreviewMouseUp="tbCustom_PreviewMouseUp" TextChanged="tbCustom_TextChanged" MaxLength="20"></TextBox>
+                                    </RadioButton>
+                                    <!--<RadioButton GroupName="radio" Margin="0, 2" x:Name="radioCompressed" Click="radio_Click" Style="{StaticResource radiobutton1}">Compressed</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioDocument" Click="radio_Click" Style="{StaticResource radiobutton1}">Document</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioSystem" Click="radio_Click" Style="{StaticResource radiobutton1}">System</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioFolder" Click="radio_Click" Style="{StaticResource radiobutton1}">Folder</RadioButton>-->
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioVideo" Click="radio_Click" Style="{StaticResource radiobutton1}">Video</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioAudio" Click="radio_Click" Style="{StaticResource radiobutton1}">Audio</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioImage" Click="radio_Click" Style="{StaticResource radiobutton1}">Image</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioText" Click="radio_Click" Style="{StaticResource radiobutton1}">Text</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioNone" Click="radio_Click" Style="{StaticResource radiobutton1}">None</RadioButton>
+                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioOther" Click="radio_Click" Style="{StaticResource radiobutton1}">Other</RadioButton>
+                                </ItemsControl>
+                                <Button x:Name="btnApply" Click="btnApply_Click" Padding="15, 7" Margin="0,20" HorizontalAlignment="Center" VerticalContentAlignment="Top" IsEnabled="False">Set preview type
+                                </Button>
+                                <Grid Margin="0">
+                                    <StackPanel>
+                                        <TextBlock x:Name="infoFileType" Style="{StaticResource textblock1}">File class</TextBlock>
+                                        <TextBlock x:Name="infoFileTypeValue" Foreground="#FFAAAAAA" Style="{StaticResource textblock1}" TextWrapping="Wrap" Text="{Binding LastSelectedListItem.File}"></TextBlock>
+                                        <Border Height="2" Margin="0,4,0,2">
+                                            <Border.Background>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                    <GradientStop Color="#339F0000" Offset="0"/>
+                                                    <GradientStop Color="#33260A0A" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock x:Name="infoPerceivedType" Style="{StaticResource textblock1}">Perceived Type</TextBlock>
+                                        <TextBlock x:Name="infoPerceivedTypeValue" Foreground="#FFAAAAAA" Style="{StaticResource textblock1}" Text="{Binding LastSelectedListItem.PercievedType, ConverterParameter=none, Converter={StaticResource EmptyToStringConverter}}"></TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
