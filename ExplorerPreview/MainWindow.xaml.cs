@@ -26,11 +26,15 @@ namespace ExplorerPreview
     public partial class MainWindow : Window
     {
         Data data;
-        
+
         double dpiX = 0;
         double dpiY = 0;
+        double ListHeight;
+
+        bool TypeAnimTriggerd = false;
 
         private const string RegPrefix = "_PREVIEW_DEFAULT_";
+
         public MainWindow()
         {
             data = new Data();
@@ -58,15 +62,9 @@ namespace ExplorerPreview
             data.InitFilters();
             DataContext = data;
             Loaded += MainWindow_Loaded;
-            listTypes.Height = 300;
-            btnSaveNewType.Visibility = Visibility.Collapsed;
-            tbNewType.Visibility = Visibility.Collapsed;
-
-            //data.view = new CollectionViewSource()
-            //{
-            //    Source = data.RegTypes
-            //};
-            //data.view.View.Filter = item => ((RegType)item).File.Contains(txtBox.Text);
+            ListTypes.Height = 300;
+            SaveNewTypeButton.Visibility = Visibility.Collapsed;
+            NewTypeTextBox.Visibility = Visibility.Collapsed;
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -76,8 +74,6 @@ namespace ExplorerPreview
 
         protected override void OnSourceInitialized(EventArgs e)
         {
-            
-
             PresentationSource source = PresentationSource.FromVisual(this);
 
             if (source != null)
@@ -86,9 +82,9 @@ namespace ExplorerPreview
                 dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
             }
 
-            txtBox.Focus();
+            SearchBox.Focus();
 
-            ListHeight = listTypes.ActualHeight;
+            ListHeight = ListTypes.ActualHeight;
 
 
             base.OnSourceInitialized(e);
@@ -107,43 +103,38 @@ namespace ExplorerPreview
             //}
         }
 
-        private void listTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (listTypes.SelectedIndex == -1) return;
-            //var albi = (listTypes.ItemContainerGenerator.ContainerFromItem(e.AddedItems[0]) as ListBoxItem);
-            //var sss = VisualStateManager.GoToState(albi, "MouseEnter", true);
+            if (ListTypes.SelectedIndex == -1) return;
             if (infoFileTypeValue.Visibility == Visibility.Hidden) infoFileTypeValue.Visibility = Visibility.Visible;
             if (infoPerceivedTypeValue.Visibility == Visibility.Hidden) infoPerceivedTypeValue.Visibility = Visibility.Visible;
-            
-            data.LastSelectedListItem = (RegType)listTypes.Items.GetItemAt(listTypes.SelectedIndex);
-            RegType selItem = data.Files[listTypes.SelectedIndex];
-            if (listTypes.SelectedIndex >= 0)
+
+            data.LastSelectedListItem = (RegType)ListTypes.Items.GetItemAt(ListTypes.SelectedIndex);
+            RegType selItem = data.Files[ListTypes.SelectedIndex];
+            if (ListTypes.SelectedIndex >= 0)
             {
                 LastPercievedType = data.LastSelectedListItem.PercievedType;
                 if (data.LastSelectedListItem.PercievedType != "")
                 {
                     string fileType = data.LastSelectedListItem.PercievedType.ToLower();
 
-                    bool isCustom = true;
-
                     btnsItemsControl.Items.Cast<RadioButton>().ToList().ForEach(b => {
                         if (b.Content.ToString().ToLower() == fileType)
                         {
                             b.IsChecked = true;
-                            isCustom = false;
-                        } else
+                        }
+                        else
                         {
                             b.IsChecked = false;
                         }
                     });
 
-                    btnApply.IsEnabled = false;
-                    if (isCustom) tbCustom.Text = fileType;
+                    ApplyButton.IsEnabled = false;
                     SetButtonText(fileType);
                 }
                 else
                 {
-                    radioNone.IsChecked = true;
+                    PercievedTypeNoneRadioButton.IsChecked = true;
                     SetButtonText("none");
                 }
             }
@@ -152,35 +143,33 @@ namespace ExplorerPreview
                 LastPercievedType = "None";
                 SetButtonText("none");
             }
-            
-        }  
+
+        }
 
         private void FilterList()
         {
             data.Filter();
-            //data.view.View.Filter = item => ((RegType)item).File.Contains(txtBox.Text);
+            //data.view.View.Filter = item => ((RegType)item).File.Contains(SearchBox.Text);
             //data.view.View.Refresh();
 
-            //data.view.Filter += (s, e) => { e.Accepted = ((RegType)e.Item).File.Contains(txtBox.Text); };
+            //data.view.Filter += (s, e) => { e.Accepted = ((RegType)e.Item).File.Contains(SearchBox.Text); };
 
-            //data.Files.FilterFrom(data.RegTypes, (t) => t.File.Contains(txtBox.Text));
+            //data.Files.FilterFrom(data.RegTypes, (t) => t.File.Contains(SearchBox.Text));
             //btnsItemsControl.Items.Cast<RadioButton>().ToList().ForEach(b => { b.IsChecked = false; });
         }
-
-        private void txtBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            data.FilterSearch = txtBox.Text;
+            data.FilterSearch = SearchBox.Text;
             infoFileTypeValue.Visibility = Visibility.Hidden;
             infoPerceivedTypeValue.Visibility = Visibility.Hidden;
 
-            if (listTypes == null) return;
+            if (ListTypes == null) return;
             FilterList();
         }
-
-        private void btnApply_Click(object sender, RoutedEventArgs e)
+        private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            var style = btnApply.Style;
+
+            var style = ApplyButton.Style;
             var _key = data.LastSelectedListItem.File;
             using (RegistryKey tempKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes"))
             {
@@ -197,84 +186,48 @@ namespace ExplorerPreview
                         if (conTyp != null) prefixKey.SetValue("Content Type", conTyp);
                         if (perTyp != null) prefixKey.SetValue("PerceivedType", perTyp);
                     }
-                    
+
                     key.SetValue("PerceivedType", newPType);
                     LastPercievedType = newPType;
-                    btnApply.IsEnabled = false;
+                    ApplyButton.IsEnabled = false;
                     data.LastSelectedListItem.PercievedType = newPType;
                     if (newPType == "none")
                     {
                         MessageBox.Show(string.Format("{0} percieved type removed. Explorer preview pane will not preview files of this type.", _key, newPType), "Perceived Type Change", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-                    } else {
+                    }
+                    else
+                    {
                         MessageBox.Show(string.Format("{0} will now be previewed as {1} in the Explorer preview pane", _key, newPType), "Perceived Type Change", MessageBoxButton.OK, MessageBoxImage.Asterisk);
                     }
                 }
             }
         }
-
-        private void radio_Click(object sender, RoutedEventArgs e)
+        private void PercievedTypeGroup_Click(object sender, RoutedEventArgs e)
         {
             var btn = e.Source as RadioButton;
-            string selText = (btn.Content.GetType().Equals(typeof(TextBox)) ? tbCustom.Text : btn.Content.ToString()).ToLower();
-            
-            if (btn.Name == "radioCustom")
-            {
-                OnCustomRadio();
-            } else
-            {
-                btnApply.IsEnabled = LastPercievedType == selText ? false : true;
-            }
+            string selText = btn.Content.ToString().ToLower();
+
+            ApplyButton.IsEnabled = LastPercievedType == selText ? false : true;
             SelectedRadio = selText;
             SetButtonText(selText);
         }
-
-        private void OnCustomRadio()
-        {
-            radioCustom.IsChecked = true;
-            tbCustom.Focus();
-            SetButtonText(tbCustom.Text.Trim());
-        }
-
         private void SetButtonText(string str)
         {
-            btnApply.Content = str == "" ? "Set preview type" : string.Format("Set preview type '{0}'", str);
-            //if (str == "")
-            //{
-            //    btnApply.Content = "Set preview type";
-            //}
-            //else
-            //{
-            //    btnApply.Content = string.Format("Set preview type '{0}'", str);
-            //}
+            ApplyButton.Content = str == "" ? "Set preview type" : string.Format("Set preview type '{0}'", str);
         }
 
-        private void tbCustom_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            OnCustomRadio();
-        }
-
-        private void tbCustom_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string txt = tbCustom.Text.Trim();
-            if (txt == "") btnApply.IsEnabled = false;
-            else btnApply.IsEnabled = true;
-
-            SetButtonText(txt);
-        }
-
-        private void btnNewType_MouseEnter(object sender, MouseEventArgs e)
+        private void NewTypeButton_MouseEnter(object sender, MouseEventArgs e)
         {
             FadeInButtonNewType(false);
         }
-
-        private void btnNewType_MouseLeave(object sender, MouseEventArgs e)
+        private void NewTypeButton_MouseLeave(object sender, MouseEventArgs e)
         {
             FadeOutButtonNewType(false);
         }
 
         private void FadeInButtonNewType(bool full)
         {
-            double animFrom = full ? 0.8 : btnNewType.Opacity;
+            double animFrom = full ? 0.8 : NewTypeButton.Opacity;
             DoubleAnimation anim = new DoubleAnimation(animFrom, 1, TimeSpan.FromMilliseconds(150), FillBehavior.HoldEnd)
             {
                 EasingFunction = new SineEase()
@@ -282,78 +235,64 @@ namespace ExplorerPreview
                     EasingMode = EasingMode.EaseIn
                 }
             };
-            btnNewType.BeginAnimation(OpacityProperty, anim);
+            NewTypeButton.BeginAnimation(OpacityProperty, anim);
         }
-
         private void FadeOutButtonNewType(bool full)
         {
             double animTo = full ? 0 : 0.4;
-            DoubleAnimation anim = new DoubleAnimation(btnNewType.Opacity, animTo, TimeSpan.FromMilliseconds(150), FillBehavior.HoldEnd)
+            DoubleAnimation anim = new DoubleAnimation(NewTypeButton.Opacity, animTo, TimeSpan.FromMilliseconds(150), FillBehavior.HoldEnd)
             {
                 EasingFunction = new SineEase()
                 {
                     EasingMode = EasingMode.EaseIn
                 }
             };
-            btnNewType.BeginAnimation(OpacityProperty, anim);
+            NewTypeButton.BeginAnimation(OpacityProperty, anim);
         }
 
-        private void tbNewType_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void NewTypeButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            NewTypeButton.Visibility = Visibility.Collapsed;
+            NewTypeTextBox.Visibility = Visibility.Visible;
 
-        }
+            SaveNewTypeButton.Opacity = 1;
+            SaveNewTypeButton.Visibility = Visibility.Visible;
 
-        private void btnNewType_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            btnNewType.Visibility = Visibility.Collapsed;
-            tbNewType.Visibility = Visibility.Visible;
-
-            btnSaveNewType.Opacity = 1;
-            btnSaveNewType.Visibility = Visibility.Visible;
-
-            tbNewType.Focus();
-            tbNewType.Select(tbNewType.Text.Length, 1);
+            NewTypeTextBox.Focus();
+            NewTypeTextBox.Select(NewTypeTextBox.Text.Length, 1);
 
 
             if (!TypeAnimTriggerd)
             {
-                listTypes.BeginAnimation(HeightProperty, new DoubleAnimation(ListHeight, ListHeight - 50, TimeSpan.FromMilliseconds(400), FillBehavior.HoldEnd)
+                ListTypes.BeginAnimation(HeightProperty, new DoubleAnimation(ListHeight, ListHeight - 50, TimeSpan.FromMilliseconds(400), FillBehavior.HoldEnd)
                 {
                     EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut }
                 });
             }
             TypeAnimTriggerd = true;
         }
-
-        private void tbNewType_PreviewKeyUp(object sender, KeyEventArgs e)
+        private void NewTypeTextBox_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
-                tbNewType.Text = "";
-                btnNewType.Opacity = 1;
+                NewTypeTextBox.Text = "";
+                NewTypeButton.Opacity = 1;
                 HideTextboxNewType();
             }
         }
 
-        public void HideTextboxNewType()
+        private void HideTextboxNewType()
         {
-            tbNewType.Text = "";
-            //tbNewType.Visibility = Visibility.Collapsed;
-            //btnNewType.Visibility = Visibility.Visible;
+            NewTypeTextBox.Text = "";
 
-            //tbNewType.Visibility = Visibility.Collapsed;
-            listTypes.BeginAnimation(HeightProperty, new DoubleAnimation(listTypes.ActualHeight, ListHeight, TimeSpan.FromMilliseconds(400), FillBehavior.Stop)
+            ListTypes.BeginAnimation(HeightProperty, new DoubleAnimation(ListTypes.ActualHeight, ListHeight, TimeSpan.FromMilliseconds(400), FillBehavior.Stop)
             {
                 EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut }
             });
 
-            //listTypes.BeginAnimation(HeightProperty, new DoubleAnimation(btnSaveNewType.Opacity, 0, TimeSpan.FromMilliseconds(400), FillBehavior.Stop)
-            //{
-            //    EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut }
-            //});
             Storyboard sb = new Storyboard();
-
             TypeAnimTriggerd = false;
+
             var fade = new DoubleAnimation()
             {
                 From = 1,
@@ -362,47 +301,34 @@ namespace ExplorerPreview
                 FillBehavior = FillBehavior.Stop
             };
 
-            Storyboard.SetTarget(fade, btnSaveNewType);
+            Storyboard.SetTarget(fade, SaveNewTypeButton);
             Storyboard.SetTargetProperty(fade, new PropertyPath(OpacityProperty));
 
             sb.Completed += (s, e) =>
             {
-                btnSaveNewType.Visibility = Visibility.Collapsed;
-                btnNewType.Visibility = Visibility.Visible;
-                tbNewType.Visibility = Visibility.Collapsed;
+                SaveNewTypeButton.Visibility = Visibility.Collapsed;
+                NewTypeButton.Visibility = Visibility.Visible;
+                NewTypeTextBox.Visibility = Visibility.Collapsed;
             };
+
             sb.Children.Add(fade);
             sb.Begin();
-
-
-            //btnNewType.Opacity = 1;
-            //btnNewType.Visibility = Visibility.Visible;
-            //FadeInButtonNewType(true);
-            //TypeAnimTriggerd = false;
         }
 
-        bool TypeAnimTriggerd = false;
-        double ListHeight;
-
-        private void tbNewType_TextChanged(object sender, TextChangedEventArgs e)
+        private void SaveNewTypeButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-
-        }
-
-        private void btnSaveNewType_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (tbNewType.Text == "")
+            if (NewTypeTextBox.Text == "")
             {
                 MessageBox.Show("File type cant be empty", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            } else
+            }
+            else
             {
                 SaveNew();
             }
         }
-
         private void SaveNew()
         {
-            var _v = tbNewType.Text.Trim();
+            var _v = NewTypeTextBox.Text.Trim();
             var newType = (_v[0] == '.' ? _v : "." + _v);
             using (RegistryKey tempKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes", true))
             {
@@ -414,10 +340,12 @@ namespace ExplorerPreview
                     {
                         tempKey.CreateSubKey(newType).SetValue("PerceivedType", "none");
                         success = true;
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         MessageBox.Show(string.Format("Something went wrong! Exception: {0}", ex.InnerException.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    } finally
+                    }
+                    finally
                     {
                         if (success)
                         {
@@ -425,52 +353,26 @@ namespace ExplorerPreview
                             HideTextboxNewType();
                             var _newRegType = new RegType(newType, newType, "none");
                             data.Files.Add(_newRegType);
-                            txtBox.Text = newType;
+                            SearchBox.Text = newType;
                             data.LastSelectedListItem = _newRegType;
-                            radioNone.IsChecked = true;
+                            PercievedTypeNoneRadioButton.IsChecked = true;
                             data.Refresh();
-                            listTypes.SelectedIndex = listTypes.Items.IndexOf(_newRegType);
-                            
+                            ListTypes.SelectedIndex = ListTypes.Items.IndexOf(_newRegType);
                         }
                     }
-                } else
+                }
+                else
                 {
                     MessageBox.Show(string.Format("{0} is already a registered file type", newType), "Warning", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
         }
 
-        private void ReloadList()
-        {
-            //data.RegTypes.Clear();
-            //data.FileteredTypes.Clear();
-            //using (RegistryKey tempKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes"))
-            //{
-            //    foreach (var key in tempKey.GetSubKeyNames())
-            //    {
-            //        if (key != "")
-            //        {
-            //            using (RegistryKey keyValue = tempKey.OpenSubKey(key))
-            //            {
-            //                var finalKey = keyValue.GetValue("PerceivedType");
-            //                if (key[0] == '.')
-            //                {
-            //                    var rk = new RegType(key, string.Join("\\", tempKey.Name, key), finalKey == null ? "" : finalKey.ToString());
-            //                    data.RegTypes.Add(rk);
-            //                    data.FileteredTypes.Add(rk);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-        }
-
-        private void contentGrid_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ContentGrid_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             CheckMouseHover();
         }
-
-        private void contentGrid_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void ContentGrid_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             CheckMouseHover();
         }
@@ -479,7 +381,7 @@ namespace ExplorerPreview
         {
             if (TypeAnimTriggerd)
             {
-                if (!(gridBottomLeft.IsMouseOver || btnApply.IsMouseOver))
+                if (!(gridBottomLeft.IsMouseOver || ApplyButton.IsMouseOver))
                 {
                     HideTextboxNewType();
                     TypeAnimTriggerd = false;

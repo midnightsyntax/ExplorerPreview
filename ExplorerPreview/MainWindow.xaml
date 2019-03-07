@@ -121,7 +121,7 @@
         <Grid x:Name="overlayGrid" Margin="10" Background="Black" Opacity="0.6">
 
         </Grid>
-        <Grid x:Name="contentGrid" Margin="10" Opacity="1" PreviewMouseLeftButtonUp="contentGrid_PreviewMouseLeftButtonUp" PreviewMouseRightButtonUp="contentGrid_PreviewMouseRightButtonUp">
+        <Grid x:Name="ContentGrid" Margin="10" Opacity="1" PreviewMouseLeftButtonUp="ContentGrid_PreviewMouseLeftButtonUp" PreviewMouseRightButtonUp="ContentGrid_PreviewMouseRightButtonUp">
             <StackPanel x:Name="leftStackpanel">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -136,7 +136,7 @@
                         <Grid Margin="10">
                             <StackPanel>
                                 <TextBlock FontSize="11" Style="{StaticResource textblock1}">Search</TextBlock>
-                                <TextBox x:Name="txtBox" FontSize="12" Padding="5" VerticalAlignment="Top" Text="" TextChanged="txtBox_TextChanged"></TextBox>
+                                <TextBox x:Name="SearchBox" FontSize="12" Padding="5" VerticalAlignment="Top" Text="" TextChanged="SearchBox_TextChanged"></TextBox>
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -149,7 +149,7 @@
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Grid.RowSpan="2">
                                     <TextBlock Grid.Row="0" Style="{StaticResource textblock1}">File types</TextBlock>
-                                    <ListBox Grid.Row="1" x:Name="listTypes" ItemsSource="{Binding Files}" HorizontalAlignment="Left" Height="255" Width="160" Margin="0,0,0,10" SelectionChanged="listTypes_SelectionChanged" VerticalContentAlignment="Center">
+                                    <ListBox Grid.Row="1" x:Name="ListTypes" ItemsSource="{Binding Files}" HorizontalAlignment="Left" Height="255" Width="160" Margin="0,0,0,10" SelectionChanged="ListTypes_SelectionChanged" VerticalContentAlignment="Center">
                                         <ListBox.ItemContainerStyle>
                                             <Style TargetType="ListBoxItem">
                                                 <Setter Property="Padding" Value="0"/>
@@ -165,9 +165,9 @@
                                     </ListBox>
                                     <Grid x:Name="gridBottomLeft" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <StackPanel HorizontalAlignment="Center">
-                                            <TextBox x:Name="tbNewType" Width="160" Height="35" FontSize="12" Visibility="Visible" TextChanged="tbNewType_TextChanged" HorizontalContentAlignment="Center" PreviewKeyUp="tbNewType_PreviewKeyUp" Padding="0" PreviewMouseLeftButtonUp="tbNewType_PreviewMouseLeftButtonUp" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0"></TextBox>
-                                            <Button x:Name="btnSaveNewType" Visibility="Visible" Width="160" Height="35" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5" Background="#FFC3FF86" RenderTransformOrigin="0.5,0.5"  PreviewMouseLeftButtonUp="btnSaveNewType_PreviewMouseLeftButtonUp" >Save</Button>
-                                            <Button x:Name="btnNewType" Visibility="Visible" Width="160" Height="35" FontSize="12" PreviewMouseLeftButtonUp="btnNewType_PreviewMouseLeftButtonUp" Opacity="0.5" MouseEnter="btnNewType_MouseEnter" MouseLeave="btnNewType_MouseLeave" Padding="15, 7" Margin="0" HorizontalAlignment="Center" VerticalContentAlignment="Top">Register new type</Button>
+                                            <TextBox x:Name="NewTypeTextBox" Width="160" Height="35" FontSize="12" Visibility="Visible" HorizontalContentAlignment="Center" Padding="0" VerticalContentAlignment="Center" VerticalAlignment="Center" Margin="0"></TextBox>
+                                            <Button x:Name="SaveNewTypeButton" Visibility="Visible" Width="160" Height="35" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,5" Background="#FFC3FF86" RenderTransformOrigin="0.5,0.5"  PreviewMouseLeftButtonUp="SaveNewTypeButton_PreviewMouseLeftButtonUp" >Save</Button>
+                                            <Button x:Name="NewTypeButton" Visibility="Visible" Width="160" Height="35" FontSize="12" PreviewMouseLeftButtonUp="NewTypeButton_PreviewMouseLeftButtonUp" Opacity="0.5" MouseEnter="NewTypeButton_MouseEnter" MouseLeave="NewTypeButton_MouseLeave" Padding="15, 7" Margin="0" HorizontalAlignment="Center" VerticalContentAlignment="Top">Register new type</Button>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
@@ -179,21 +179,14 @@
                         <Grid Margin="0,25,10,0">
                             <StackPanel Margin="10, 0, 0, 0" x:Name="stackpanelRight">
                                 <ItemsControl x:Name="btnsItemsControl">
-                                    <RadioButton GroupName="radio" Visibility="Collapsed" Margin="0, 2" x:Name="radioCustom" Click="radio_Click" Style="{StaticResource radiobutton1}">
-                                        <TextBox x:Name="tbCustom" Width="120" PreviewMouseUp="tbCustom_PreviewMouseUp" TextChanged="tbCustom_TextChanged" MaxLength="20"></TextBox>
-                                    </RadioButton>
-                                    <!--<RadioButton GroupName="radio" Margin="0, 2" x:Name="radioCompressed" Click="radio_Click" Style="{StaticResource radiobutton1}">Compressed</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioDocument" Click="radio_Click" Style="{StaticResource radiobutton1}">Document</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioSystem" Click="radio_Click" Style="{StaticResource radiobutton1}">System</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioFolder" Click="radio_Click" Style="{StaticResource radiobutton1}">Folder</RadioButton>-->
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioVideo" Click="radio_Click" Style="{StaticResource radiobutton1}">Video</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioAudio" Click="radio_Click" Style="{StaticResource radiobutton1}">Audio</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioImage" Click="radio_Click" Style="{StaticResource radiobutton1}">Image</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioText" Click="radio_Click" Style="{StaticResource radiobutton1}">Text</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioNone" Click="radio_Click" Style="{StaticResource radiobutton1}">None</RadioButton>
-                                    <RadioButton GroupName="radio" Margin="0, 2" x:Name="radioOther" Click="radio_Click" Style="{StaticResource radiobutton1}">Other</RadioButton>
+                                    <RadioButton GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">Video</RadioButton>
+                                    <RadioButton GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">Audio</RadioButton>
+                                    <RadioButton GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">Image</RadioButton>
+                                    <RadioButton GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">Text</RadioButton>
+                                    <RadioButton GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">None</RadioButton>
+                                    <RadioButton x:Name="PercievedTypeNoneRadioButton" GroupName="PercievedTypeGroup" Margin="0, 2" Click="PercievedTypeGroup_Click" Style="{StaticResource radiobutton1}">Other</RadioButton>
                                 </ItemsControl>
-                                <Button x:Name="btnApply" Click="btnApply_Click" Padding="15, 7" Margin="0,20" HorizontalAlignment="Center" VerticalContentAlignment="Top" IsEnabled="False">Set preview type
+                                <Button x:Name="ApplyButton" Click="ApplyButton_Click" Padding="15, 7" Margin="0,20" HorizontalAlignment="Center" VerticalContentAlignment="Top" IsEnabled="False">Set preview type
                                 </Button>
                                 <Grid Margin="0">
                                     <StackPanel>
