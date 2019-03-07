@@ -93,16 +93,6 @@ namespace ExplorerPreview
         private string SelectedRadio;
         private string LastPercievedType = null;
 
-        private void Load()
-        {
-            //RegTypeModel regTypeModel = new RegTypeModel();
-            //System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ModelMap));
-            //using (var writer = new System.IO.StreamWriter(@"e:\test.xml"))
-            //{
-            //    serializer.Serialize(writer, regTypeModel);
-            //}
-        }
-
         private void ListTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ListTypes.SelectedIndex == -1) return;
